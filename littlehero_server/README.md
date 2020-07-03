@@ -16,9 +16,15 @@
 - (pip install django-filter) --추후 사용 예정
 
 
-만약 venv 환경에서 설치 오류시 <br>
+1. 
+ 만약 venv 환경에서 설치 오류시 <br>
     *'python -m pip install \<pkg name>'* <br>
-시도해 보세요.
+ 시도해 보세요.
+
+2.
+ 만약 chromedriver 를 불러오는 과정에서 에러가 난다면,<br>
+ 본인이 사용하고 있는 크롬 브라우져의 버전에 맞는 chromedriver를 다운받아<br>
+ 해당 파일이 있었던 위치에 넣어주세요.<br>
 
 ### 공고와 관련된 DB table(model)
 * created_at : (레코드 저장 시) 생성 시각
