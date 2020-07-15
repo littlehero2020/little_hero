@@ -55,17 +55,5 @@ packages/rest_framework_swagger/templates/rest_framework_swagger/index.html
  - start_date, end_date : django datefield. yyyy-mm-dd.
  - else: String
 
-<br>더 필요하다고 생각되는 내용이 있으면 언제든 SLACK ME!.
-
-
-
-___
-## To Do
- 1. **해결!** ~~현재까지 완성된 크롤러는 1365 홈의 1번 페이지만 긁어오도록 되어 있음. 모든 페이지를 긁어오도록 수정해야 함.~~
- 2. **해결!!** ~~http connection을 비롯한 error handling 필요. 하나도 안되어있음..ㅎ...~~
- 3. 공고 상세 내용에 img 있는 건 어떻게 할건지 합의 후 해결하기,,
- 4. 지도 api?
- 5. AWS에 환경 설치해야 함. django는 Apache 쓴다던데 그것도 더 찾아봐야 함...
- 6. do_date 수정해야하나? string 대신 date form 이 필요하지 않나.. 프론트에서 호출하는 거 고려하면?
- 7. domain도 저장된거 보면 기타 > 기타 이런 형식으로 저장되어 있는데 컬럼을 두개로 나눠야 하지 않나?
+<br>더 필요하다고 생각되는 내용이 있으면 언제든 말씀해주세요!<br>
  
