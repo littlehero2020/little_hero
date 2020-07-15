@@ -1,5 +1,15 @@
+## NOTES
 현재 local 가상환경에서 실행해 본 파일입니다.<br>
-**api 호출하실 때는 db column이름을 snake_case 에서 camelCase로 바꿔주세요!**<br>
+ - 1365 의 공고를 크롤링해서 DB에 저장
+ - 127.0.0.1:8000/api/doc 로 접속시 사용 가능한 api 확인할 수 있습니다.
+ - 확인 후 사용하세요.
+ - **api 호출하실 때는 db column이름을 snake_case 에서 camelCase로 바꿔주세요!**
+
+<br>
+
+돌려보시다가 혹시라도 error 발생하면 해당 부분과 error msg 캡처해서 @sookylee 에게 알려주세요.<br>
+감사합니다.
+
 
 ## Before you use..
 - pip install django
