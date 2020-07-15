@@ -19,7 +19,10 @@ def push_data(data) :
         if temp.recruit_status != data['recruit_status'] :
             temp.recruit_status = data['recruit_status']
             temp.save()
-            print('1365 ' + str(data['regist_no']) +' has updated.')
+            if data['site_damain']==domain_of_url.ILSAM65.value :
+                print('1365 ' + str(data['regist_no']) +' has updated.')
+            elif data['site_damain']==domain_of_url.VMS.value :
+                print('VMS ' + str(data['regist_no']) +' has updated.')
     ## push
     except : 
         Post(
@@ -30,7 +33,8 @@ def push_data(data) :
                 adult_status=data['adult_status'],
                 domain=data['domain'],
                 text=data['text'],
-                do_date=data['do_date'],
+                start_date=data['start_date'],
+                end_date=data['end_date'],
                 do_date_extra=data['do_date_extra'],
                 recruit_member=data['recruit_member'],
                 recruit_company=data['recruit_company'],
