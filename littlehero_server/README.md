@@ -15,8 +15,9 @@
 - pip install django
 - pip install requests
 - pip install bs4
+- pip install selenium
 - pip install djangorestframework
-- pip install rest-framework-swagger
+- pip install django-framework-swagger
 - pip install django-filter
 
 ### error 발생 시!

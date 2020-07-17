@@ -11,9 +11,9 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "littlehero_server.settings")
 import django
 django.setup()
 
-from announcement.models import Post
-from _db_utils import push_data
-from _db_utils import domain_of_url
+from .announcement.models import Post
+from ._db_utils import push_data
+from ._db_utils import domain_of_url
 from datetime import datetime
 from django.utils import timezone
 
