@@ -1,0 +1,16 @@
+button {
+    color: white;
+    background-color: #33FF;
+    text-align: center;
+    padding: 5px 20px;
+    border-radius: 20em;
+    display: inline-block;
+}
+
+h2 {
+    text-align: center;
+}
+
+.butt {
+    margin-left: 41%;
+}

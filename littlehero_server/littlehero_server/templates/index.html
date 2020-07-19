@@ -1,0 +1,26 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="utf-8">
+<head>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}">
+    <title>Little Hero</title>
+</head>
+<body>
+  <h2> Welcome to Little Hero! </h2><br>
+  <div>
+      <span class="butt">
+          <button type="button" id="doc">api doc</button>
+          <button type="button" id="post">posts</button>
+      </span>
+  </div>
+  <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+    <script>
+        $("#doc").click(function(){
+            location.href = "/api/doc";
+        });
+        $("#post").click(function(){
+            location.href = "/api/posts";
+        });
+    </script>
+</body>
+</html>
