@@ -14,6 +14,9 @@ django.setup()
 from announcement.models import Post
 from _db_utils import push_data
 from _db_utils import domain_of_url
+from datetime import datetime
+from django.utils import timezone
+
 
 
 def parser_1365() :
@@ -100,15 +103,16 @@ def _get_datas(driver, URL, SHOW) :
         else :
             recruit_status = False
         data['recruit_status'] = recruit_status
-        do_date = tmp.select('div.board_data.type2 > div:nth-child(1) > dl:nth-child(1) > dd')[0].text
-        data['do_date'] = do_date
+        do_date = tmp.select('div.board_data.type2 > div:nth-child(1) > dl:nth-child(1) > dd')[0].text.split('~')
+        data['start_date'] = timezone.make_aware(datetime.strptime(do_date[0][:-1], '%Y.%m.%d'))
+        data['end_date'] = timezone.make_aware(datetime.strptime(do_date[1][1:], '%Y.%m.%d'))
         do_time = tmp.select('div.board_data.type2 > div:nth-child(1) > dl:nth-child(2) > dd')[0].text
         do_week = tmp.select('div.board_data.type2 > div:nth-child(2) > dl:nth-child(2) > dd')[0].text
         data['do_date_extra'] = do_week + ' ' + do_time
         recruit_member = tmp.select('div.board_data.type2 > div:nth-child(3) > dl:nth-child(1) > dd')[0].text
         data['recruit_member'] = recruit_member
         domain = tmp.select('div.board_data.type2 > div:nth-child(4) > dl:nth-child(1) > dd')[0].text
-        data['domain'] = domain
+        data['domain'] = domain.split('>')[0][:-1]
         adult_tmp = tmp.select('div.board_data.type2 > div:nth-child(4) > dl:nth-child(2) > dd')[0].text.strip()
         if adult_tmp == '성인' :
             data['adult_status'] = True
