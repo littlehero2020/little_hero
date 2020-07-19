@@ -20,12 +20,16 @@ from announcement.views import *
 from django.conf.urls import url, include
 from rest_framework_swagger.views import get_swagger_view
 
+from django.urls import re_path
+from . import views
 
 router = routers.DefaultRouter()
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     url(r'^api/doc', get_swagger_view(title='Rest API Document')),
     url(r'^api/posts', PostView.as_view()),
     url(r'^api/posts/detail', PostViewDetail.as_view()),
+    re_path(r'^$', views.index, name='index'),
 ]
