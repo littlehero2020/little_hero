@@ -11,6 +11,9 @@ h2 {
     text-align: center;
 }
 
-.butt {
-    margin-left: 41%;
+
+ol {
+    margin-left: auto;
+    margin-right: auto;
+    display: table;
 }
