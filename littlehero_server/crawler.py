@@ -229,7 +229,7 @@ def crawling_data(url, regist_no):
         recruit_member = recruit_member.split('/')
         recruit_member = re.findall("\d+", recruit_member[0])
         data['recruit_member'] = int(recruit_member[0])
-        data['telephone'] = soup.select_one('#rightArea > div.con > div.personInfo > dl:nth-child(3) > dd').get_text()
+        data['telephone'] = soup.select_one('#rightArea > div.con > div.personInfo > dl:nth-child(3) > dd')
         if data['telephone'] is None:
             data['telephone'] = "-"
         else:
