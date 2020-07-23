@@ -142,96 +142,115 @@ def _get_datas(driver, URL, SHOW) :
         push_data(data)
     return
 
+
 def parser_vms():
-    currTime = time.strftime("%Y-%m-%d", time.localtime(time.time()))
-    endTime = datetime.today() + timedelta(days=30)
-    endTime = endTime.strftime("%Y-%m-%d")
+    curr_time = time.strftime("%Y-%m-%d", time.localtime(time.time()))
+    end_time = datetime.today() + timedelta(days=30)
+    end_time = end_time.strftime("%Y-%m-%d")
 
     page = 1
+    status = True
 
-    while page < 10:
-        vmsUrl = 'https://www.vms.or.kr/partspace/recruit.do?area=&areagugun=&acttype=&status=&sttdte=' + currTime + '&enddte=' + endTime + '&termgbn=&searchType=title&searchValue=&page=' + str(
-            page)
-        req = requests.get(vmsUrl)
+    while status:
+        vms_url = 'https://www.vms.or.kr/partspace/recruit.do?area=&areagugun=&acttype=&status=&sttdte=' + curr_time \
+                 + '&enddte=' + end_time + '&termgbn=&searchType=title&searchValue=&page=' + str(page)
+        req = requests.get(vms_url)
         soup = BeautifulSoup(req.text, 'html.parser')
-
-        #   empty = soup.select('li.empty') needs error handling
-
         lists = soup.select('ul.list_wrap > li > a[href]')
         p = re.compile('(?<=\")(.*?)(?=\")')
 
         for link in lists:
             regist_no = int(str(link.select_one('.num').get_text()))
             link = 'https://www.vms.or.kr/partspace/' + str(p.search(str(link)).group())
-            crawlingData(link, regist_no)
+            exit_status = crawling_data(link, regist_no)
+
+            if exit_status == 1:
+                status = False
+                break
+            else:
+                continue
 
         page = page + 1
 
+    return
 
-def crawlingData(url, regist_no):
+
+def crawling_data(url, regist_no):
     req = requests.get(url)  # needs error handling
     soup = BeautifulSoup(req.text, 'html.parser')
     data = {}
+    empty = soup.select_one('#rightArea > div.con > div.boardList.boardListService > ul > li')
 
-    # 기본 정보
-    data['regist_no'] = regist_no
-    data['site_domain'] = domain_of_url.VMS.value
-    data['url'] = url
-    data['title'] = soup.select_one('#rightArea > div.con > div.bbs_view > div.viewTitle > p').get_text()
+    if empty is not None:
+        return 1
 
-    # 봉사 장소 정보
-    address = re.sub('\s+', ' ', soup.select_one(
-        '#rightArea > div.con > div.bbs_view > div:nth-child(4) > dl:nth-child(1) > dd').get_text())
-    address = address.split(' ')
-    data['address_city'] = address[2]
-    data['address_gu'] = address[3]
-    data['address_remainder'] = soup.select_one(
-        '#rightArea > div.con > div.bbs_view > div:nth-child(4) > dl:nth-child(2) > dd').get_text()
-
-    # 상태 정보
-    recruit_text = soup.select_one(
-        '#rightArea > div.con > div.bbs_view > div.viewTitle > div > span:nth-child(1)').get_text()
-    if recruit_text == '[모집중]':
-        recruit_status = True
     else:
-        recruit_status = False
-    data['recruit_status'] = recruit_status
+        # 기본 정보
+        data['regist_no'] = regist_no
+        data['site_domain'] = domain_of_url.VMS.value
+        data['url'] = url
+        data['title'] = soup.select_one('#rightArea > div.con > div.bbs_view > div.viewTitle > p').get_text()
 
-    adult_text = re.sub('\s+', ' ',
-                        soup.select_one('#rightArea > div.con > table > tbody > tr:nth-child(2) > td').get_text())
-    adult_text = adult_text.strip()
-    if adult_text == '-':
-        adult_status = False
-    elif int(adult_text[0:2]) >= 20:
-        adult_status = True
-    else:
-        adult_status = False
-    data['adult_status'] = adult_status
+        # 봉사 장소 정보
+        address = re.sub('\s+', ' ', soup.select_one(
+            '#rightArea > div.con > div.bbs_view > div:nth-child(4) > dl:nth-child(1) > dd').get_text())
+        address = address.split(' ')
+        data['address_city'] = address[2]
+        data['address_gu'] = address[3]
+        data['address_remainder'] = soup.select_one(
+            '#rightArea > div.con > div.bbs_view > div:nth-child(4) > dl:nth-child(2) > dd').get_text()
 
-    # 모집 기관 정보
-    data['recruit_company'] = soup.select_one(
-        '#rightArea > div.con > div.bbs_view > div:nth-child(3) > dl:nth-child(1) > dd').get_text()
-    recruit_member = soup.select_one(
-        '#rightArea > div.con > div.bbs_view > div:nth-child(5) > dl:nth-child(2) > dd').get_text().strip()
-    recruit_member = recruit_member.split('/')
-    recruit_member = re.findall("\d+", recruit_member[0])
-    data['recruit_member'] = int(recruit_member[0])
-    data['telephone'] = soup.select_one('#rightArea > div.con > div.personInfo > dl:nth-child(3) > dd').get_text()
+        # 상태 정보
+        recruit_text = soup.select_one(
+            '#rightArea > div.con > div.bbs_view > div.viewTitle > div > span:nth-child(1)').get_text()
+        if recruit_text == '[모집중]':
+            recruit_status = True
+        else:
+            recruit_status = False
+        data['recruit_status'] = recruit_status
 
-    # 봉사 활동 정보
-    data['domain'] = soup.select_one(
-        '#rightArea > div.con > div.bbs_view > div:nth-child(2) > dl:nth-child(2) > dd').get_text()[3:]
-    data['text'] = soup.select_one('#rightArea > div.con > table > tbody > tr:nth-child(6) > td > div').get_text()
-    date_info = soup.select_one(
-        '#rightArea > div.con > div.bbs_view > div:nth-child(2) > dl:nth-child(1) > dd').get_text().replace(' ', '')
-    date_info = date_info.split('~')
-    data['start_date'] = timezone.make_aware(datetime.strptime(date_info[0], '%Y-%m-%d'))
-    data['end_date'] = timezone.make_aware(datetime.strptime(date_info[1], '%Y-%m-%d'))
-    do_data_extra = re.sub('\s+', ' ', soup.select_one('#rightArea > div.con > div.bbs_view > div:nth-child(3) > dl:nth-child(2) > dd').get_text())
-    data['do_data_extra'] = do_data_extra
+        adult_text = re.sub('\s+', ' ',
+                            soup.select_one('#rightArea > div.con > table > tbody > tr:nth-child(2) > td').get_text())
+        adult_text = adult_text.strip()
+        nums = re.findall("\d+", adult_text)
+        if adult_text == '-':
+            adult_status = False
+        elif int(nums[0]) >= 20:
+            adult_status = True
+        else:
+            adult_status = False
+        data['adult_status'] = adult_status
 
-    push_data(data)
+        # 모집 기관 정보
+        data['recruit_company'] = soup.select_one(
+            '#rightArea > div.con > div.bbs_view > div:nth-child(3) > dl:nth-child(1) > dd').get_text()
+        recruit_member = soup.select_one(
+            '#rightArea > div.con > div.bbs_view > div:nth-child(5) > dl:nth-child(2) > dd').get_text().strip()
+        recruit_member = recruit_member.split('/')
+        recruit_member = re.findall("\d+", recruit_member[0])
+        data['recruit_member'] = int(recruit_member[0])
+        data['telephone'] = soup.select_one('#rightArea > div.con > div.personInfo > dl:nth-child(3) > dd').get_text()
+        if data['telephone'] is None:
+            data['telephone'] = "-"
+        else:
+            data['telephone'] = data['telephone'].get_text()
 
+        # 봉사 활동 정보
+        data['domain'] = soup.select_one(
+            '#rightArea > div.con > div.bbs_view > div:nth-child(2) > dl:nth-child(2) > dd').get_text()[3:]
+        data['text'] = soup.select_one('#rightArea > div.con > table > tbody > tr:nth-child(6) > td > div').get_text()
+        date_info = soup.select_one(
+            '#rightArea > div.con > div.bbs_view > div:nth-child(2) > dl:nth-child(1) > dd').get_text().replace(' ', '')
+        date_info = date_info.split('~')
+        data['start_date'] = timezone.make_aware(datetime.strptime(date_info[0], '%Y-%m-%d'))
+        data['end_date'] = timezone.make_aware(datetime.strptime(date_info[1], '%Y-%m-%d'))
+        do_data_extra = re.sub('\s+', ' ', soup.select_one(
+            '#rightArea > div.con > div.bbs_view > div:nth-child(3) > dl:nth-child(2) > dd').get_text())
+        data['do_data_extra'] = do_data_extra
+
+        push_data(data)
+
+        return 0
 
 
 if __name__ == '__main__' :
