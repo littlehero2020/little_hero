@@ -244,9 +244,9 @@ def crawling_data(url, regist_no):
         date_info = date_info.split('~')
         data['start_date'] = timezone.make_aware(datetime.strptime(date_info[0], '%Y-%m-%d'))
         data['end_date'] = timezone.make_aware(datetime.strptime(date_info[1], '%Y-%m-%d'))
-        do_data_extra = re.sub('\s+', ' ', soup.select_one(
+        do_date_extra = re.sub('\s+', ' ', soup.select_one(
             '#rightArea > div.con > div.bbs_view > div:nth-child(3) > dl:nth-child(2) > dd').get_text())
-        data['do_data_extra'] = do_data_extra
+        data['do_date_extra'] = do_date_extra
 
         push_data(data)
 
