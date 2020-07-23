@@ -6,6 +6,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 import time
 import os
+import re
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "littlehero_server.settings")
 import django
@@ -14,9 +15,9 @@ django.setup()
 from announcement.models import Post
 from _db_utils import push_data
 from _db_utils import domain_of_url
+from datetime import timedelta
 from datetime import datetime
 from django.utils import timezone
-
 
 
 def parser_1365() :
@@ -46,7 +47,7 @@ def parser_1365() :
         for ind in range(2,pageNum+2) :
             #print(str(ind))
             _get_datas(driver, URL, SHOW)
-            
+
             ## go to next page
             page_temp = driver.find_elements_by_xpath('//*[@id="content"]/div[2]/div[5]/div/div/div/*')
             page_temp[ind+1].click()
@@ -57,15 +58,10 @@ def parser_1365() :
         page_temp = driver.find_elements_by_xpath('//*[@id="content"]/div[2]/div[5]/div/div/div/*')
         if page_temp[ind+1].get_attribute('href').split('=')[1] == page_temp[ind].text :
             break
-    
+
     driver.quit()
 
     return
-
-
-
-
-
 
 
 def _get_datas(driver, URL, SHOW) :
@@ -88,12 +84,12 @@ def _get_datas(driver, URL, SHOW) :
             except :
                 time.sleep(5)
                 continue
-            
+
         data['url'] = URL+SHOW+val
         res_html = res.text
         res_soup = BeautifulSoup(res_html, 'html.parser')
         tmp = res_soup.select('#content > div.content_view > div > div.board_view.type2')[0]
-        
+
         title = tmp.select('h3 > input[type=hidden]')[0].attrs['value']
         data['title'] = title
         #print(title)
@@ -146,8 +142,98 @@ def _get_datas(driver, URL, SHOW) :
         push_data(data)
     return
 
+def parser_vms():
+    currTime = time.strftime("%Y-%m-%d", time.localtime(time.time()))
+    endTime = datetime.today() + timedelta(days=30)
+    endTime = endTime.strftime("%Y-%m-%d")
+
+    page = 1
+
+    while page < 10:
+        vmsUrl = 'https://www.vms.or.kr/partspace/recruit.do?area=&areagugun=&acttype=&status=&sttdte=' + currTime + '&enddte=' + endTime + '&termgbn=&searchType=title&searchValue=&page=' + str(
+            page)
+        req = requests.get(vmsUrl)
+        soup = BeautifulSoup(req.text, 'html.parser')
+
+        #   empty = soup.select('li.empty') needs error handling
+
+        lists = soup.select('ul.list_wrap > li > a[href]')
+        p = re.compile('(?<=\")(.*?)(?=\")')
+
+        for link in lists:
+            regist_no = int(str(link.select_one('.num').get_text()))
+            link = 'https://www.vms.or.kr/partspace/' + str(p.search(str(link)).group())
+            crawlingData(link, regist_no)
+
+        page = page + 1
+
+
+def crawlingData(url, regist_no):
+    req = requests.get(url)  # needs error handling
+    soup = BeautifulSoup(req.text, 'html.parser')
+    data = {}
+
+    # 기본 정보
+    data['regist_no'] = regist_no
+    data['site_domain'] = domain_of_url.VMS.value
+    data['url'] = url
+    data['title'] = soup.select_one('#rightArea > div.con > div.bbs_view > div.viewTitle > p').get_text()
+
+    # 봉사 장소 정보
+    address = re.sub('\s+', ' ', soup.select_one(
+        '#rightArea > div.con > div.bbs_view > div:nth-child(4) > dl:nth-child(1) > dd').get_text())
+    address = address.split(' ')
+    data['address_city'] = address[2]
+    data['address_gu'] = address[3]
+    data['address_remainder'] = soup.select_one(
+        '#rightArea > div.con > div.bbs_view > div:nth-child(4) > dl:nth-child(2) > dd').get_text()
+
+    # 상태 정보
+    recruit_text = soup.select_one(
+        '#rightArea > div.con > div.bbs_view > div.viewTitle > div > span:nth-child(1)').get_text()
+    if recruit_text == '[모집중]':
+        recruit_status = True
+    else:
+        recruit_status = False
+    data['recruit_status'] = recruit_status
+
+    adult_text = re.sub('\s+', ' ',
+                        soup.select_one('#rightArea > div.con > table > tbody > tr:nth-child(2) > td').get_text())
+    adult_text = adult_text.strip()
+    if adult_text == '-':
+        adult_status = False
+    elif int(adult_text[0:2]) >= 20:
+        adult_status = True
+    else:
+        adult_status = False
+    data['adult_status'] = adult_status
+
+    # 모집 기관 정보
+    data['recruit_company'] = soup.select_one(
+        '#rightArea > div.con > div.bbs_view > div:nth-child(3) > dl:nth-child(1) > dd').get_text()
+    recruit_member = soup.select_one(
+        '#rightArea > div.con > div.bbs_view > div:nth-child(5) > dl:nth-child(2) > dd').get_text().strip()
+    recruit_member = recruit_member.split('/')
+    recruit_member = re.findall("\d+", recruit_member[0])
+    data['recruit_member'] = int(recruit_member[0])
+    data['telephone'] = soup.select_one('#rightArea > div.con > div.personInfo > dl:nth-child(3) > dd').get_text()
+
+    # 봉사 활동 정보
+    data['domain'] = soup.select_one(
+        '#rightArea > div.con > div.bbs_view > div:nth-child(2) > dl:nth-child(2) > dd').get_text()[3:]
+    data['text'] = soup.select_one('#rightArea > div.con > table > tbody > tr:nth-child(6) > td > div').get_text()
+    date_info = soup.select_one(
+        '#rightArea > div.con > div.bbs_view > div:nth-child(2) > dl:nth-child(1) > dd').get_text().replace(' ', '')
+    date_info = date_info.split('~')
+    data['start_date'] = timezone.make_aware(datetime.strptime(date_info[0], '%Y-%m-%d'))
+    data['end_date'] = timezone.make_aware(datetime.strptime(date_info[1], '%Y-%m-%d'))
+    do_data_extra = re.sub('\s+', ' ', soup.select_one('#rightArea > div.con > div.bbs_view > div:nth-child(3) > dl:nth-child(2) > dd').get_text())
+    data['do_data_extra'] = do_data_extra
+
+    push_data(data)
 
 
 
 if __name__ == '__main__' :
     parser_1365()
+    parser_vms()
