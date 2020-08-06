@@ -1,0 +1,173 @@
+import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
+
+void main() => runApp(MyApp());
+
+class MyApp extends StatefulWidget {
+  @override
+  _MyAppState createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'Little Hero',
+      home: Portfolio(),
+    );
+  }
+}
+
+class Portfolio extends StatefulWidget {
+  @override
+  _PortfolioState createState() => _PortfolioState();
+}
+
+class _PortfolioState extends State<Portfolio> {
+  File _image;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          'Little Hero',
+          style: TextStyle(fontFamily: 'Bangers', color: Color(0xfff7b3c2)),
+        ),
+        backgroundColor: Colors.white,
+        centerTitle: true,
+        elevation: 0.0,
+        iconTheme: IconThemeData(color: Colors.pink[100]),
+      ),
+      drawer: Drawer(
+        child: ListView(
+          padding: EdgeInsets.zero,
+          children: <Widget>[
+            UserAccountsDrawerHeader(
+              currentAccountPicture: CircleAvatar(
+                backgroundImage: AssetImage('assets/photos/zzang.png'),
+                backgroundColor: Colors.pink[600],
+              ),
+              accountName: Text('sungmoomoo'),
+              accountEmail: Text('blogisu@naver.com'),
+              decoration: BoxDecoration(
+                  color: Colors.pink[600],
+                  borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(25.0),
+                      bottomRight: Radius.circular(25.0))),
+            ),
+            ListTile(
+              leading: Icon(
+                Icons.home,
+                color: Colors.grey[700],
+              ),
+              title: Text(
+                '홈',
+                style: TextStyle(fontFamily: 'Sunflower'),
+              ),
+              onTap: () {
+                print('Home is clicked');
+              },
+            ),
+            ListTile(
+              leading: Icon(
+                Icons.description,
+                color: Colors.grey[700],
+              ),
+              title: Text(
+                '공고',
+                style: TextStyle(fontFamily: 'Sunflower'),
+              ),
+              onTap: () {
+                print('board is clicked');
+              },
+            ),
+            ListTile(
+              leading: Icon(
+                Icons.star,
+                color: Colors.grey[700],
+              ),
+              title: Text(
+                '즐겨찾기',
+                style: TextStyle(fontFamily: 'Sunflower'),
+              ),
+              onTap: () {
+                print('star is clicked');
+              },
+            ),
+            ListTile(
+              leading: Icon(
+                Icons.today,
+                color: Colors.grey[700],
+              ),
+              title: Text(
+                '캘린더',
+                style: TextStyle(fontFamily: 'Sunflower'),
+              ),
+              onTap: () {
+                print('Calendar is clicked');
+              },
+            ),
+            ListTile(
+              leading: Icon(
+                Icons.create,
+                color: Colors.black,
+              ),
+              title: Text(
+                '포트폴리오 작성',
+                style: TextStyle(fontFamily: 'Sunflower'),
+              ),
+              onTap: () {
+                print('pen is clicked');
+              },
+            ),
+          ],
+        ),
+      ),
+      body: SafeArea(
+          child: Column(
+        children: <Widget>[
+          FlatButton(
+            color: Colors.red,
+            child: Text(
+              'New picture',
+              style: TextStyle(color: Colors.white, fontFamily: 'Bangers'),
+            ),
+            onPressed: () {
+              getImage(ImageSource.camera);
+            },
+          ),
+          FlatButton(
+            color: Colors.deepOrangeAccent,
+            child: Text(
+              'Add New Portfolio',
+              style: TextStyle(color: Colors.white, fontFamily: 'Bangers'),
+            ),
+            onPressed: () {
+              getImage(ImageSource.gallery);
+            },
+          ),
+          showImage()
+        ],
+      )),
+    );
+  }
+
+  Widget showImage() {
+    if (_image == null)
+      return Container();
+    else
+      return Image.file(_image);
+  }
+
+  Future getImage(ImageSource imageSource) async {
+    var image = await ImagePicker.pickImage(source: imageSource);
+
+    setState(() {
+      _image = image;
+    });
+  }
+}
+
