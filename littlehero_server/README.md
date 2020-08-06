@@ -68,3 +68,6 @@ packages/rest_framework_swagger/templates/rest_framework_swagger/index.html
 
 <br>더 필요하다고 생각되는 내용이 있으면 언제든 말씀해주세요!<br>
  
+
+### MINE
+ - AWS 에 chromedriver 설치하기: https://dvpzeekke.tistory.com/1
