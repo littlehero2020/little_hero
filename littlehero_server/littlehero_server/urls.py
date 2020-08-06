@@ -29,7 +29,7 @@ router = routers.DefaultRouter()
 urlpatterns = [
     path('admin/', admin.site.urls),
     url(r'^api/doc', get_swagger_view(title='Rest API Document')),
-    url(r'^api/posts', PostView.as_view()),
+    url(r'^api/posts/all', PostView.as_view()),
     url(r'^api/posts/detail', PostViewDetail.as_view()),
     re_path(r'^$', views.index, name='index'),
 ]
