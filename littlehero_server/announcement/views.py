@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from rest_framework import viewsets, generics
+from rest_framework.filters import SearchFilter
 from .serializers import *
 from .models import Post
 import django_filters
@@ -26,9 +27,10 @@ class PostPagination(PageNumberPagination):
 class PostView(generics.ListAPIView) :
     queryset = Post.objects.all().order_by('-created_at')
     serializer_class = PostSerializer
-    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
+    filter_backends = (SearchFilter, django_filters.rest_framework.DjangoFilterBackend,)
     filter_class = PostFilter
     pagination_class = PostPagination
+    search_fields = ['title']
 
 
 # update likes
@@ -37,3 +39,11 @@ class LikeView(generics.UpdateAPIView):
     serializer_class = LikeCreateSerializer
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     filter_class = PostDetailFilter
+
+
+# get dropdown
+class DropDownView(generics.ListAPIView):
+    queryset = Dropdown.objects.all()
+    serializer_class = DropDownSerializer
+    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
+    filter_class = DropDownFilter
