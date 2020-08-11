@@ -39,3 +39,11 @@ class LikeView(generics.UpdateAPIView):
     serializer_class = LikeCreateSerializer
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     filter_class = PostDetailFilter
+
+
+# get dropdown
+class DropDownView(generics.ListAPIView):
+    queryset = Dropdown.objects.all()
+    serializer_class = DropDownSerializer
+    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
+    filter_class = DropDownFilter

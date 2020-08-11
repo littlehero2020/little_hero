@@ -34,6 +34,7 @@ admin.site.register(CitiesTable)
 urlpatterns = [
     path('admin/', admin.site.urls),
     url(r'^api/doc', get_swagger_view(title='Rest API Document')),
+    url(r'^api/posts/dropdown', DropDownView.as_view()),
     url(r'^api/posts/all', PostView.as_view()),
     url(r'^api/posts/detail', PostViewDetail.as_view()),
     url(r'^api/posts/likes', LikeView.as_view()),

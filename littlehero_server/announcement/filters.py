@@ -1,6 +1,6 @@
 from django_filters import rest_framework as fils
 from rest_framework import generics
-from .models import Post
+from .models import Post, Dropdown
 
 class PostDetailFilter(fils.FilterSet) :
     registNo = fils.NumberFilter(field_name='regist_no')
@@ -33,3 +33,9 @@ class PostFilter(fils.FilterSet) :
             'like',
         ]
     
+
+
+class DropDownFilter(fils.FilterSet):
+    class Meta:
+        model = Dropdown
+        fields = ['kinds', 'li']

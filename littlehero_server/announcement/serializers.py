@@ -1,5 +1,5 @@
 from rest_framework import serializers, generics
-from .models import Post
+from .models import Post, Dropdown
 
 class PostDetailSerializer(serializers.ModelSerializer):
     class Meta :
@@ -31,3 +31,9 @@ class LikeCreateSerializer(serializers.ModelSerializer):
             'site_domain',
             'like',
         )
+
+
+class DropDownSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Dropdown
+        fields = ['li']
