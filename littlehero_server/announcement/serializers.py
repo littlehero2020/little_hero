@@ -22,3 +22,12 @@ class PostSerializer(serializers.ModelSerializer):
             'end_date',
             'domain',
         )
+
+class LikeCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Post
+        fields = (
+            'regist_no',
+            'site_domain',
+            'like',
+        )

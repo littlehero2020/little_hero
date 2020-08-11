@@ -4,6 +4,7 @@ from .serializers import *
 from .models import Post
 import django_filters
 from .filters import *
+from rest_framework.pagination import PageNumberPagination
 
 # Create your views here.
 
@@ -16,6 +17,10 @@ class PostViewDetail(generics.ListAPIView) :
     filter_class = PostDetailFilter
 
 
+# pagination
+class PostPagination(PageNumberPagination):
+    page_size = 10
+    page_query_param = 'page_size'
 
 # query handling of notice board
 class PostView(generics.ListAPIView) :
@@ -23,3 +28,12 @@ class PostView(generics.ListAPIView) :
     serializer_class = PostSerializer
     filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
     filter_class = PostFilter
+    pagination_class = PostPagination
+
+
+# update likes
+class LikeView(generics.UpdateAPIView):
+    queryset = Post.objects.all()
+    serializer_class = LikeCreateSerializer
+    filter_backends = (django_filters.rest_framework.DjangoFilterBackend,)
+    filter_class = PostDetailFilter
