@@ -30,3 +30,14 @@ class Post(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class Dropdown(models.Model):
+    kinds = models.CharField(default='', max_length=10)
+    li = models.CharField(default='', max_length=5)
+
+    def publish(self):
+        self.save()
+
+    def __str__(self):
+        return self.li

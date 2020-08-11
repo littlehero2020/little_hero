@@ -30,5 +30,6 @@ class PostFilter(fils.FilterSet) :
             'adultStatus',
             'startDate',
             'endDate',
+            'like',
         ]
     
