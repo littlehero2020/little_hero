@@ -22,7 +22,7 @@ class Post(models.Model):
     do_date_extra = models.CharField(default='', max_length=200)
     recruit_company = models.CharField(default='', max_length=300)
     recruit_member = models.CharField(default='0 명 / 일', max_length=200)
-    
+    like = models.IntegerField(default=0)
 
     def publish(self):
         self.published_date = timezone.now()

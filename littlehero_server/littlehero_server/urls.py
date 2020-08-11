@@ -34,6 +34,7 @@ urlpatterns = [
     url(r'^api/doc', get_swagger_view(title='Rest API Document')),
     url(r'^api/posts/all', PostView.as_view()),
     url(r'^api/posts/detail', PostViewDetail.as_view()),
+    url(r'^api/posts/likes', LikeView.as_view()),
     url(r'^api/cities/list', CitiesView.as_view()),
     url(r'^api/cities/detail', CitiesTableView.as_view()),
     re_path(r'^$', views.index, name='index'),
