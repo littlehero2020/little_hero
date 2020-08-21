@@ -29,7 +29,8 @@ class LikeCreateSerializer(serializers.ModelSerializer):
         fields = (
             'regist_no',
             'site_domain',
-            'like',
+            'likes_post',
+            'like_count',
         )
 
 
