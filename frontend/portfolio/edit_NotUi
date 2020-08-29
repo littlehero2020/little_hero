@@ -1,0 +1,79 @@
+import 'package:flutter/material.dart';
+import 'package:listviewtest/database/db.dart';
+import 'package:listviewtest/database/memo.dart';
+import 'package:crypto/crypto.dart';
+import 'dart:convert';
+
+class EditPage extends StatelessWidget {
+  String title = '';
+  String text = '';
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        actions: <Widget>[
+          IconButton(
+            icon: const Icon(Icons.delete),
+            onPressed: () {},
+          ),
+          IconButton(
+            icon: const Icon(Icons.save),
+            onPressed: saveDB,
+          ),
+        ],
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: <Widget>[
+            TextField(
+              onChanged: (String title) {
+                this.title = title;
+              },
+              style: TextStyle(fontSize: 30, fontWeight: FontWeight.w500),
+              keyboardType: TextInputType.multiline,
+              maxLines: 2,
+              decoration: InputDecoration(
+                hintText: '제목',
+              ),
+            ),
+            Padding(padding: EdgeInsets.all(8.0)),
+            TextField(
+              onChanged: (String text) {
+                this.text = text;
+              },
+              keyboardType: TextInputType.multiline,
+              maxLines: null,
+              decoration: InputDecoration(
+                hintText: '내용',
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> saveDB() async {
+    DBHelper sd = DBHelper();
+
+    var fido = Memo(
+      id: str2sha512(DateTime.now().toString()),
+      title: this.title,
+      text: this.text,
+      createTime: DateTime.now().toString(),
+      editTime: DateTime.now().toString(),
+    );
+
+    await sd.insertMemo(fido);
+
+    print(await sd.memos());
+  }
+
+  String str2sha512(String text) {
+    var bytes = utf8.encode(text); // data being hashed
+
+    var digest = sha512.convert(bytes);
+    return digest.toString();
+  }
+}
