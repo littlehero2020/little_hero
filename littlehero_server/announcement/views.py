@@ -29,7 +29,7 @@ class PostView(generics.ListAPIView) :
     serializer_class = PostSerializer
     filter_backends = (SearchFilter, django_filters.rest_framework.DjangoFilterBackend,)
     filter_class = PostFilter
-    pagination_class = PostPagination
+    # pagination_class = PostPagination
     search_fields = ['title']
 
 
